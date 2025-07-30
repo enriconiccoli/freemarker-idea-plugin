@@ -1,0 +1,21 @@
+<idea-plugin>
+    <id>com.ennic.freemarker</id>
+    <name>FreeMarker Syntax Highlighter</name>
+    <version>1.0</version>
+    <vendor email="enniccoli@gmail.com">ENNIC</vendor>
+
+    <description>
+        Plugin to highlight FreeMarker syntax in .ftl files.
+    </description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileTypeFactory implementation="com.ennic.filetype.FreeMarkerFileTypeFactory"/>
+        <lang.parserDefinition language="FreeMarker" implementationClass="com.ennic.FreeMarkerParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="FreeMarker"
+                                       implementationClass="com.ennic.highlighting.FreeMarkerSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="com.ennic.highlighting.FreeMarkerColorSettingsPage"/>
+    </extensions>
+
+</idea-plugin>
