@@ -11,11 +11,11 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileTypeFactory implementation="com.ennic.filetype.FreeMarkerFileTypeFactory"/>
-        <lang.parserDefinition language="FreeMarker" implementationClass="com.ennic.FreeMarkerParserDefinition"/>
+        <fileTypeFactory implementation="com.ennic.freemarker.filetype.FreeMarkerFileTypeFactory"/>
+        <lang.parserDefinition language="FreeMarker" implementationClass="com.ennic.freemarker.FreeMarkerParserDefinition"/>
         <lang.syntaxHighlighterFactory language="FreeMarker"
-                                       implementationClass="com.ennic.highlighting.FreeMarkerSyntaxHighlighterFactory"/>
-        <colorSettingsPage implementation="com.ennic.highlighting.FreeMarkerColorSettingsPage"/>
+                                       implementationClass="com.ennic.freemarker.highlighting.FreeMarkerSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="com.ennic.freemarker.highlighting.FreeMarkerColorSettingsPage"/>
     </extensions>
 
 </idea-plugin>

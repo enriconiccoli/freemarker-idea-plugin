@@ -1,4 +1,4 @@
-package com.ennic.filetype;
+package com.ennic.freemarker.filetype;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;

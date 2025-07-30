@@ -1,8 +1,8 @@
-package com.ennic;
+package com.ennic.freemarker;
 
-import com.ennic.filetype.FreeMarkerFile;
-import com.ennic.filetype.FreeMarkerLanguage;
-import com.ennic.lexer.FreeMarkerLexer;
+import com.ennic.freemarker.filetype.FreeMarkerFile;
+import com.ennic.freemarker.filetype.FreeMarkerLanguage;
+import com.ennic.freemarker.lexer.FreeMarkerLexer;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiBuilder;
@@ -30,11 +30,10 @@ public class FreeMarkerParserDefinition implements ParserDefinition {
         return (root, builder) -> {
             PsiBuilder.Marker rootMarker = builder.mark();
             while (!builder.eof()) {
-                // Consuma tutti i token
                 builder.advanceLexer();
             }
             rootMarker.done(root);
-            return builder.getTreeBuilt(); // Aggiunto il return statement mancante
+            return builder.getTreeBuilt();
         };
     }
     @Override

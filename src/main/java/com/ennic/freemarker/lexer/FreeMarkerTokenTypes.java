@@ -1,4 +1,4 @@
-package com.ennic.lexer;
+package com.ennic.freemarker.lexer;
 
 import com.intellij.psi.tree.IElementType;
 

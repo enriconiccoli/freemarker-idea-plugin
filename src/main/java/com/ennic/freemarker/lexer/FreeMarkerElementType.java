@@ -1,6 +1,6 @@
-package com.ennic.lexer;
+package com.ennic.freemarker.lexer;
 
-import com.ennic.filetype.FreeMarkerLanguage;
+import com.ennic.freemarker.filetype.FreeMarkerLanguage;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;

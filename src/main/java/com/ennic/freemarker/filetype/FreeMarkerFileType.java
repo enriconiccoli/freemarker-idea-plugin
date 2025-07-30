@@ -1,4 +1,4 @@
-package com.ennic.filetype;
+package com.ennic.freemarker.filetype;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +34,6 @@ public class FreeMarkerFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return null; // puoi aggiungere un'icona personalizzata qui
+        return null;
     }
 }

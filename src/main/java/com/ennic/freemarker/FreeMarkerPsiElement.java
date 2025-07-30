@@ -1,4 +1,4 @@
-package com.ennic;
+package com.ennic.freemarker;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;

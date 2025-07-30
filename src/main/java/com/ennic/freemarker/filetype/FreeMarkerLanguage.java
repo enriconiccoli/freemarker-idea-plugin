@@ -1,4 +1,4 @@
-package com.ennic.filetype;
+package com.ennic.freemarker.filetype;
 
 import com.intellij.lang.Language;
 

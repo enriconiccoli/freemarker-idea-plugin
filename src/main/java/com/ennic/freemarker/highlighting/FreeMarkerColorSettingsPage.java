@@ -1,4 +1,4 @@
-package com.ennic.highlighting;
+package com.ennic.freemarker.highlighting;
 
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;

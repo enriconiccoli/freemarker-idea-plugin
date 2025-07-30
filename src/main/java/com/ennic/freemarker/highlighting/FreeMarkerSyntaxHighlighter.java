@@ -1,7 +1,7 @@
-package com.ennic.highlighting;
+package com.ennic.freemarker.highlighting;
 
-import com.ennic.lexer.FreeMarkerLexer;
-import com.ennic.lexer.FreeMarkerTokenTypes;
+import com.ennic.freemarker.lexer.FreeMarkerLexer;
+import com.ennic.freemarker.lexer.FreeMarkerTokenTypes;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
