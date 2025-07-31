@@ -19,6 +19,7 @@ public class FreeMarkerLexer extends LexerBase {
     private static final int IN_COMMENT = 2;
     private static final int STARTING_HTML_TAG = 3;
     private static final int IN_HTML_TAG = 4;
+    private static final int IN_INTERPOLATION = 5;
     private int state = NORMAL;
 
 
@@ -157,28 +158,25 @@ public class FreeMarkerLexer extends LexerBase {
         return false;
     }
 
-    private boolean isDirective(){
-
-        // Check if there's a directive start command (<#)
-        if (currentPosition + 1 < endOffset && buffer.charAt(currentPosition) == '<' && buffer.charAt(currentPosition + 1) == '#') {
+    private boolean isDirective() {
+        // Check for directive start command (<#)
+        if (hasPattern("<#", 2)) {
             currentPosition += 2;
             currentToken = FreeMarkerTokenTypes.DIRECTIVE_START;
             state = IN_DIRECTIVE;
             return true;
         }
 
-        // Check if there's an inline directive closing command (/>)
-        if (state == IN_DIRECTIVE && (buffer.charAt(currentPosition) == '/' &&
-                buffer.charAt(currentPosition + 1) == '>')){
+        // Check for inline directive closing command (/>)
+        if (state == IN_DIRECTIVE && hasPattern("/>", 2)) {
             currentPosition += 2;
             currentToken = FreeMarkerTokenTypes.DIRECTIVE_START;
             state = NORMAL;
             return true;
         }
 
-        // Check if there's a directive closing command (</#)
-        if (currentPosition + 2 < endOffset && buffer.charAt(currentPosition) == '<' &&
-                buffer.charAt(currentPosition + 1) == '/' && buffer.charAt(currentPosition + 2) == '#') {
+        // Check for directive closing command (</#)
+        if (hasPattern("</#", 3)) {
             currentPosition += 3;
             currentToken = FreeMarkerTokenTypes.DIRECTIVE_CLOSING;
             state = IN_DIRECTIVE;
@@ -187,72 +185,86 @@ public class FreeMarkerLexer extends LexerBase {
         return false;
     }
 
-    private boolean isInterpolation(){
-
-        // Checks if there's a starting interpolation command (${)
-        if (currentPosition + 1 < endOffset && buffer.charAt(currentPosition) == '$' && buffer.charAt(currentPosition + 1) == '{') {
+    private boolean isInterpolation() {
+        // Check for starting interpolation command (${)
+        if (hasPattern("${", 2)) {
             currentPosition += 2;
             currentToken = FreeMarkerTokenTypes.INTERPOLATION_START;
+            //state = IN_INTERPOLATION;
             return true;
         }
 
-        // Checks if there's an ending interpolation command (})
-        if (buffer.charAt(currentPosition) == '}') {
+        // Check for ending interpolation command (})
+        if (currentChar() == '}') {
             currentPosition++;
             currentToken = FreeMarkerTokenTypes.INTERPOLATION_END;
+            //state = NORMAL;
             return true;
         }
         return false;
     }
 
-    private boolean isString(){
+    private boolean isString() {
+        char c = currentChar();
+        if (c != '"' && c != '\'') {
+            return false;
+        }
 
-        if (buffer.charAt(currentPosition) == '"' || buffer.charAt(currentPosition) == '\'') {
-
-            // Handle interpolation operation inside apos
-            if ((currentPosition + 2 < endOffset && buffer.charAt(currentPosition+1) == '$' && buffer.charAt(currentPosition + 2) == '{')
-                    || (buffer.charAt(currentPosition - 1) == '}')) {
-                currentToken = FreeMarkerTokenTypes.STRING;
-                currentPosition++;
-                return true;
-            }
-
-            char quoteChar = buffer.charAt(currentPosition);
-            currentPosition++;
-
-            while (currentPosition < endOffset && buffer.charAt(currentPosition) != quoteChar) {
-
-                if (buffer.charAt(currentPosition) == '\\' && currentPosition + 1 < endOffset) {
-                    currentPosition += 2; // Skips escape and escaped characters
-                } else {
-                    currentPosition++;
-                }
-            }
-            if (currentPosition < endOffset) {
-                currentPosition++; // Skips end quotation mark
-            }
+        // Handle interpolation inside quotes
+        if (isInterpolationContext()) {
             currentToken = FreeMarkerTokenTypes.STRING;
+            currentPosition++;
             return true;
         }
-        return false;
+
+        return parseQuotedString(c);
     }
 
-    private boolean isHTML(){
-        // Checks if there's a starting HTML tag (<)
-        if (buffer.charAt(currentPosition) == '<' && state == NORMAL) {
+    private boolean parseQuotedString(char quoteChar) {
+        currentPosition++; // Skip opening quote
+
+        while (currentPosition < endOffset) {
+            char c = currentChar();
+            if (c == quoteChar) {
+                currentPosition++; // Skip closing quote
+                break;
+            } else if (c == '\\' && currentPosition + 1 < endOffset) {
+                currentPosition += 2; // Skip escape sequence
+            } else {
+                currentPosition++;
+            }
+        }
+
+        currentToken = FreeMarkerTokenTypes.STRING;
+        return true;
+    }
+
+    private boolean isInterpolationContext() {
+        return (currentPosition + 2 < endOffset &&
+                buffer.charAt(currentPosition + 1) == '$' &&
+                buffer.charAt(currentPosition + 2) == '{') ||
+               (currentPosition > 0 && buffer.charAt(currentPosition - 1) == '}');
+    }
+
+    private boolean isHTML() {
+        // Check for HTML tag start (<)
+        if (currentChar() == '<' && state == NORMAL) {
             currentPosition++;
             currentToken = FreeMarkerTokenTypes.HTML_TAG_START;
             state = STARTING_HTML_TAG;
             return true;
         }
 
-        // Cycle on HTML
+        // Parse HTML tag content
         if (state == STARTING_HTML_TAG) {
-            while (currentPosition < endOffset && (buffer.charAt(currentPosition) != '>' && buffer.charAt(currentPosition) != ' ')) {
+            int start = currentPosition;
+            while (currentPosition < endOffset &&
+                   currentChar() != '>' &&
+                   currentChar() != ' ') {
                 currentPosition++;
             }
 
-            if (currentPosition > startOffset) {
+            if (currentPosition > start) {
                 state = IN_HTML_TAG;
                 currentToken = FreeMarkerTokenTypes.HTML_TAG_CONTENT;
                 return true;
@@ -261,51 +273,80 @@ public class FreeMarkerLexer extends LexerBase {
         return false;
     }
 
-    private boolean isKeyword(){
-
-        // Checks if there's a Freemarker keyword
-        if (currentPosition < endOffset && (Character.isLetter(buffer.charAt(currentPosition)) ||
-                buffer.charAt(currentPosition) == '_')) {
-            int start = currentPosition;
-            while (currentPosition < endOffset && (Character.isLetterOrDigit(buffer.charAt(currentPosition)) ||
-                    buffer.charAt(currentPosition) == '_')) {
-                currentPosition++;
-            }
-
-            String word = buffer.subSequence(start, currentPosition).toString();
-
-            if (word.equals("if") || word.equals("else") || word.equals("elseif") ||
-                    word.equals("list") || word.equals("assign") || word.equals("include") ||
-                    word.equals("import") || word.equals("macro") || word.equals("function") ||
-                    word.equals("return") || word.equals("switch") || word.equals("case") ||
-                    word.equals("default") || word.equals("ftl") || word.equals("setting") ||
-                    word.equals("escape") || word.equals("stop")) {
-                currentToken = FreeMarkerTokenTypes.KEYWORD;
-            } else {
-                currentToken = FreeMarkerTokenTypes.IDENTIFIER;
-            }
-            return true;
+    private boolean isKeyword() {
+        if (!isIdentifierStart(currentChar())) {
+            return false;
         }
-        return false;
+
+        int start = currentPosition;
+        while (currentPosition < endOffset && isIdentifierPart(currentChar())) {
+            currentPosition++;
+        }
+
+        String word = buffer.subSequence(start, currentPosition).toString();
+        currentToken = isFreemarkerKeyword(word) ?
+            FreeMarkerTokenTypes.KEYWORD :
+            FreeMarkerTokenTypes.IDENTIFIER;
+
+        return true;
     }
 
-    private boolean isOperator(){
-        // Numbers
-        if (Character.isDigit(buffer.charAt(currentPosition))) {
-            while (currentPosition < endOffset && (Character.isDigit(buffer.charAt(currentPosition)) ||
-                    buffer.charAt(currentPosition) == '.')) {
-                currentPosition++;
-            }
+    private boolean isFreemarkerKeyword(String word) {
+        return switch (word) {
+            case "if", "else", "elseif", "list", "assign", "include", "import", "macro", "function", "return", "switch",
+                 "case", "default", "ftl", "setting", "escape", "stop" -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isOperator() {
+        // Handle numbers
+        if (Character.isDigit(currentChar())) {
+            parseNumber();
             currentToken = FreeMarkerTokenTypes.NUMBER;
             return true;
         }
 
-        // Operators
-        if (currentPosition < endOffset && "+-*/=<>!&|^%".indexOf(buffer.charAt(currentPosition)) >= 0) {
+        // Handle operators
+        if (isOperatorChar(currentChar())) {
             currentPosition++;
             currentToken = FreeMarkerTokenTypes.OPERATOR;
             return true;
         }
+
         return false;
+    }
+
+    private void parseNumber() {
+        while (currentPosition < endOffset) {
+            char c = currentChar();
+            if (Character.isDigit(c) || c == '.') {
+                currentPosition++;
+            } else {
+                break;
+            }
+        }
+    }
+
+    // Helper methods for better readability
+    private char currentChar() {
+        return currentPosition < endOffset ? buffer.charAt(currentPosition) : '\0';
+    }
+
+    private boolean hasPattern(String pattern, int length) {
+        return currentPosition + length - 1 < endOffset &&
+               buffer.toString().startsWith(pattern, currentPosition);
+    }
+
+    private boolean isIdentifierStart(char c) {
+        return Character.isLetter(c) || c == '_';
+    }
+
+    private boolean isIdentifierPart(char c) {
+        return Character.isLetterOrDigit(c) || c == '_';
+    }
+
+    private boolean isOperatorChar(char c) {
+        return "+-*/=<>!&|^%".indexOf(c) >= 0;
     }
 }
