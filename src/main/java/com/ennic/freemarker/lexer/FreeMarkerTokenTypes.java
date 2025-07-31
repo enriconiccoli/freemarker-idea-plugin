@@ -11,8 +11,8 @@ public interface FreeMarkerTokenTypes {
     IElementType INTERPOLATION_END = new FreeMarkerElementType("INTERPOLATION_END"); // }
     IElementType COMMENT_START = new FreeMarkerElementType("COMMENT_START"); // <#--
     IElementType COMMENT_END = new FreeMarkerElementType("COMMENT_END"); // -->
-    IElementType COMMENT_TODO = new FreeMarkerElementType("COMMENT_TODO"); // Commenti che iniziano con "todo"
-    IElementType FUNCTION_CALL = new FreeMarkerElementType("FUNCTION_CALL"); // Chiamate a funzione come .pow(2, 10)
+    IElementType COMMENT_TODO = new FreeMarkerElementType("COMMENT_TODO"); //  "todo"
+    IElementType FUNCTION_CALL = new FreeMarkerElementType("FUNCTION_CALL"); // function calls
     IElementType IDENTIFIER = new FreeMarkerElementType("IDENTIFIER");
     IElementType STRING = new FreeMarkerElementType("STRING");
     IElementType NUMBER = new FreeMarkerElementType("NUMBER");
