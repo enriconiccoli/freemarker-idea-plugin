@@ -223,7 +223,6 @@ public class FreeMarkerLexer extends LexerBase {
         if (hasPattern("${", 2)) {
             currentPosition += 2;
             currentToken = FreeMarkerTokenTypes.INTERPOLATION_START;
-            //state = IN_INTERPOLATION;
             return true;
         }
 
@@ -231,9 +230,31 @@ public class FreeMarkerLexer extends LexerBase {
         if (currentChar() == '}') {
             currentPosition++;
             currentToken = FreeMarkerTokenTypes.INTERPOLATION_END;
-            //state = NORMAL;
             return true;
         }
+
+        // Check for function call
+        return isFunctionCall();
+    }
+
+    private boolean isFunctionCall() {
+
+        if (currentChar() == '.') {
+            int start = currentPosition;
+            currentPosition++;
+
+            if (currentPosition < endOffset && isIdentifierStart(currentChar())) {
+
+                while (currentPosition < endOffset && isIdentifierPart(currentChar())) {
+                    currentPosition++;
+                }
+
+                currentToken = FreeMarkerTokenTypes.FUNCTION_CALL;
+                return true;
+            }
+            currentPosition = start;
+        }
+
         return false;
     }
 

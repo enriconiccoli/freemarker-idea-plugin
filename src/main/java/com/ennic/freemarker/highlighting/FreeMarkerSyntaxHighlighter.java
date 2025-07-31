@@ -25,6 +25,9 @@ public class FreeMarkerSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey COMMENT_TODO =
             createTextAttributesKey("FREEMARKER_COMMENT_TODO",
                 new TextAttributes(new JBColor(new Color(179, 179, 0), new Color(118, 178, 56)), null, null, null, Font.BOLD));
+    public static final TextAttributesKey FUNCTION_CALL =
+            createTextAttributesKey("FREEMARKER_FUNCTION_CALL",
+                new TextAttributes(JBColor.BLUE, null, null, null, Font.PLAIN));
     public static final TextAttributesKey STRING =
             createTextAttributesKey("FREEMARKER_STRING", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey NUMBER =
@@ -42,6 +45,7 @@ public class FreeMarkerSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] INTERPOLATION_KEYS = new TextAttributesKey[]{INTERPOLATION};
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{COMMENT};
     private static final TextAttributesKey[] COMMENT_TODO_KEYS = new TextAttributesKey[]{COMMENT_TODO};
+    private static final TextAttributesKey[] FUNCTION_CALL_KEYS = new TextAttributesKey[]{FUNCTION_CALL};
     private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{STRING};
     private static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[]{NUMBER};
     private static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{KEYWORD};
@@ -72,6 +76,8 @@ public class FreeMarkerSyntaxHighlighter extends SyntaxHighlighterBase {
             return COMMENT_KEYS;
         } else if(tokenType.equals(FreeMarkerTokenTypes.COMMENT_TODO)) {
             return COMMENT_TODO_KEYS;
+        } else if (tokenType.equals(FreeMarkerTokenTypes.FUNCTION_CALL)) {
+            return FUNCTION_CALL_KEYS;
         } else if (tokenType.equals(FreeMarkerTokenTypes.STRING)) {
             return STRING_KEYS;
         } else if (tokenType.equals(FreeMarkerTokenTypes.NUMBER)) {

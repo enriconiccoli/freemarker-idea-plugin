@@ -21,6 +21,7 @@ public class FreeMarkerColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Keyword", FreeMarkerSyntaxHighlighter.KEYWORD),
             new AttributesDescriptor("Identifier", FreeMarkerSyntaxHighlighter.IDENTIFIER),
             new AttributesDescriptor("HTML Tag", FreeMarkerSyntaxHighlighter.HTML_TAG),
+            new AttributesDescriptor("Function Call", FreeMarkerSyntaxHighlighter.FUNCTION_CALL),
     };
 
     @Nullable
@@ -40,9 +41,10 @@ public class FreeMarkerColorSettingsPage implements ColorSettingsPage {
     public String getDemoText() {
         return "<html>\n" +
                 "  <body>\n" +
+                "    <#assign keyword = 'xyz' />\n"+
                 "    <#directive param=\"value\">\n" +
-                "    ${interpolation}\n" +
-                "    <#-- commento -->\n" +
+                "    ${interpolation.withFunctionCall(1)}\n" +
+                "    <#-- comment -->\n" +
                 "  </body>\n" +
                 "</html>";
     }
