@@ -19,7 +19,7 @@ public class FreeMarkerLexer extends LexerBase {
     private static final int IN_COMMENT = 2;
     private static final int STARTING_HTML_TAG = 3;
     private static final int IN_HTML_TAG = 4;
-    private static final int IN_INTERPOLATION = 5;
+    private static final int IN_TODO = 5;
     private int state = NORMAL;
 
 
@@ -132,16 +132,25 @@ public class FreeMarkerLexer extends LexerBase {
 
     private boolean isComment(){
 
-        // Check if there's a comment start command (<#--)
+        // Check if there's a comment start command (<#-- or <!--)
         if (currentPosition + 3 < endOffset && buffer.charAt(currentPosition) == '<' &&
-                buffer.charAt(currentPosition + 1) == '#' && buffer.charAt(currentPosition + 2) == '-' &&
+                (buffer.charAt(currentPosition + 1) == '#' || buffer.charAt(currentPosition + 1) == '!') && buffer.charAt(currentPosition + 2) == '-' &&
                 buffer.charAt(currentPosition + 3) == '-') {
             currentPosition += 4;
             currentToken = FreeMarkerTokenTypes.COMMENT_START;
             state = IN_COMMENT;
             return true;
         }
+
         if (state == IN_COMMENT && buffer.charAt(currentPosition) != '-'){
+
+            if (isTodoComment()) {
+                currentPosition++;
+                state = IN_TODO;
+                currentToken = FreeMarkerTokenTypes.COMMENT_TODO;
+                return true;
+            }
+
             currentPosition++;
             currentToken = FreeMarkerTokenTypes.COMMENT_START;
             return true;
@@ -155,6 +164,30 @@ public class FreeMarkerLexer extends LexerBase {
             state = NORMAL;
             return true;
         }
+
+        if (state == IN_TODO){
+            currentPosition++;
+            currentToken = FreeMarkerTokenTypes.COMMENT_TODO;
+            return true;
+        }
+
+        return false;
+    }
+
+    // Check for "todo"
+    private boolean isTodoComment() {
+        int commentContentStart = currentPosition;
+
+        while (commentContentStart < endOffset &&
+               Character.isWhitespace(buffer.charAt(commentContentStart))) {
+            commentContentStart++;
+        }
+
+        if (commentContentStart + 4 <= endOffset) {
+            String possibleTodo = buffer.subSequence(commentContentStart, commentContentStart + 4).toString().toLowerCase();
+            return "todo".equals(possibleTodo);
+        }
+
         return false;
     }
 
@@ -292,9 +325,13 @@ public class FreeMarkerLexer extends LexerBase {
     }
 
     private boolean isFreemarkerKeyword(String word) {
+        if (state == IN_HTML_TAG || state == IN_COMMENT || currentToken == FreeMarkerTokenTypes.TEXT) {
+            return false;
+        }
+
         return switch (word) {
             case "if", "else", "elseif", "list", "assign", "include", "import", "macro", "function", "return", "switch",
-                 "case", "default", "ftl", "setting", "escape", "stop" -> true;
+                 "case", "default", "ftl", "setting", "escape", "stop", "attempt", "recover", "items", "as"  -> true;
             default -> false;
         };
     }

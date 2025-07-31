@@ -5,9 +5,13 @@ import com.ennic.freemarker.lexer.FreeMarkerTokenTypes;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
@@ -18,6 +22,9 @@ public class FreeMarkerSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("FREEMARKER_INTERPOLATION", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
     public static final TextAttributesKey COMMENT =
             createTextAttributesKey("FREEMARKER_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
+    public static final TextAttributesKey COMMENT_TODO =
+            createTextAttributesKey("FREEMARKER_COMMENT_TODO",
+                new TextAttributes(new JBColor(new Color(179, 179, 0), new Color(118, 178, 56)), null, null, null, Font.BOLD));
     public static final TextAttributesKey STRING =
             createTextAttributesKey("FREEMARKER_STRING", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey NUMBER =
@@ -27,11 +34,14 @@ public class FreeMarkerSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey IDENTIFIER =
             createTextAttributesKey("FREEMARKER_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER);
     public static final TextAttributesKey HTML_TAG =
-            createTextAttributesKey("FREEMARKER_HTML_TAG", DefaultLanguageHighlighterColors.MARKUP_TAG);
+            createTextAttributesKey("FREEMARKER_HTML_TAG",
+                    new TextAttributes(new JBColor(new Color(204, 102, 0), new Color(245, 200, 130)), null, null, null, Font.PLAIN));
+
 
     private static final TextAttributesKey[] DIRECTIVE_KEYS = new TextAttributesKey[]{DIRECTIVE};
     private static final TextAttributesKey[] INTERPOLATION_KEYS = new TextAttributesKey[]{INTERPOLATION};
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{COMMENT};
+    private static final TextAttributesKey[] COMMENT_TODO_KEYS = new TextAttributesKey[]{COMMENT_TODO};
     private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{STRING};
     private static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[]{NUMBER};
     private static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{KEYWORD};
@@ -60,6 +70,8 @@ public class FreeMarkerSyntaxHighlighter extends SyntaxHighlighterBase {
         } else if (tokenType.equals(FreeMarkerTokenTypes.COMMENT_START) ||
                 tokenType.equals(FreeMarkerTokenTypes.COMMENT_END)) {
             return COMMENT_KEYS;
+        } else if(tokenType.equals(FreeMarkerTokenTypes.COMMENT_TODO)) {
+            return COMMENT_TODO_KEYS;
         } else if (tokenType.equals(FreeMarkerTokenTypes.STRING)) {
             return STRING_KEYS;
         } else if (tokenType.equals(FreeMarkerTokenTypes.NUMBER)) {
