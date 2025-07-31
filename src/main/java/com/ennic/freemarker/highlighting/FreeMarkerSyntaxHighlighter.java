@@ -1,6 +1,7 @@
 package com.ennic.freemarker.highlighting;
 
 import com.ennic.freemarker.lexer.FreeMarkerLexer;
+import com.ennic.freemarker.lexer.FreeMarkerLexerRefactored;
 import com.ennic.freemarker.lexer.FreeMarkerTokenTypes;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
@@ -56,7 +57,7 @@ public class FreeMarkerSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
-        return new FreeMarkerLexer();
+        return new FreeMarkerLexerRefactored();
     }
 
     @Override
