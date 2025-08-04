@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.17.0"
+    id("org.jetbrains.intellij.platform") version "2.7.0"
 }
 
 group = "com.ennic"
@@ -8,16 +8,15 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
-intellij {
-    version.set("2024.1.4")
-    type.set("IC") // IntelliJ Community Edition
-}
-
-tasks {
-    patchPluginXml {
-        changeNotes.set("Initial version with FreeMarker file type support.")
+dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2025.1.2")
     }
 }
 

@@ -2,7 +2,7 @@
     <id>com.ennic.freemarker</id>
     <name>FreeMarker Syntax Highlighter</name>
     <version>1.0</version>
-    <vendor email="enniccoli@gmail.com">ENNIC</vendor>
+    <vendor>Enrico Niccoli</vendor>
 
     <description>
         Plugin to highlight FreeMarker syntax in .ftl files.
