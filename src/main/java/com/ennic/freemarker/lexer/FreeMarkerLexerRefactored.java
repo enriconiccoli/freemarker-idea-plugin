@@ -119,7 +119,7 @@ public class FreeMarkerLexerRefactored extends LexerBase {
     }
 
     private boolean tryParseString() {
-        ParseResult result = StringParser.parseString(buffer, currentPosition, endOffset);
+        ParseResult result = StringParser.parseString(buffer, currentPosition, endOffset, state);
         if (result != null) {
             applyParseResult(result);
             return true;
@@ -142,7 +142,7 @@ public class FreeMarkerLexerRefactored extends LexerBase {
         // Handle '>' ending tags
         if (currentChar == '>') {
             currentPosition++;
-            if (state == LexerState.IN_DIRECTIVE) {
+            if (state == LexerState.IN_DIRECTIVE || state == LexerState.IN_INTERPOLATION) {
                 currentToken = FreeMarkerTokenTypes.DIRECTIVE_END;
                 state = LexerState.NORMAL;
             } else if (state == LexerState.IN_HTML_TAG) {
@@ -155,7 +155,7 @@ public class FreeMarkerLexerRefactored extends LexerBase {
         }
 
         // Handle '/>' self-closing HTML tags
-        if (state == LexerState.IN_HTML_TAG &&
+        if ((state == LexerState.IN_HTML_TAG || state == LexerState.IN_INTERPOLATION) &&
             currentChar == '/' &&
             LexerUtils.safeCharAt(buffer, currentPosition + 1) == '>') {
             currentPosition += 2;

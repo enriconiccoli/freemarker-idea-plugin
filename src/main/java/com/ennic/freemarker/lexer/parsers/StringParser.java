@@ -12,7 +12,7 @@ public class StringParser {
     /**
      * Parses string literals enclosed in quotes.
      */
-    public static ParseResult parseString(CharSequence buffer, int currentPosition, int endOffset) {
+    public static ParseResult parseString(CharSequence buffer, int currentPosition, int endOffset, LexerState currentState) {
         char c = LexerUtils.safeCharAt(buffer, currentPosition);
         if (c != '"' && c != '\'') {
             return null; // Not a string
@@ -25,11 +25,11 @@ public class StringParser {
                                  LexerState.IN_INTERPOLATION);
         }
 
-        return parseQuotedString(buffer, currentPosition, endOffset, c);
+        return parseQuotedString(buffer, currentPosition, endOffset, c, currentState);
     }
 
     private static ParseResult parseQuotedString(CharSequence buffer, int currentPosition,
-                                               int endOffset, char quoteChar) {
+                                               int endOffset, char quoteChar, LexerState currentState) {
         int start = currentPosition;
         currentPosition++; // Skip opening quote
 
@@ -45,9 +45,21 @@ public class StringParser {
             }
         }
 
-        return new ParseResult(currentPosition,
-                                           FreeMarkerTokenTypes.STRING,
-                                           LexerState.NORMAL);
+        if (currentState == LexerState.IN_DIRECTIVE){
+            return new ParseResult(currentPosition,
+                    FreeMarkerTokenTypes.STRING,
+                    LexerState.IN_DIRECTIVE);
+
+        } else if (currentState == LexerState.IN_HTML_TAG) {
+            return new ParseResult(currentPosition,
+                    FreeMarkerTokenTypes.STRING,
+                    LexerState.IN_HTML_TAG);
+
+        } else {
+            return new ParseResult(currentPosition,
+                    FreeMarkerTokenTypes.STRING,
+                    LexerState.NORMAL);
+        }
     }
 
     private static boolean isInterpolationContext(CharSequence buffer, int currentPosition, int endOffset) {
