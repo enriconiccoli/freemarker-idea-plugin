@@ -2,16 +2,36 @@
     <id>com.ennic.freemarker</id>
     <name>FreeMarker Syntax Highlighter</name>
     <version>1.0</version>
-    <vendor>Enrico Niccoli</vendor>
+    <vendor url="https://github.com/enriconiccoli/freemarker-idea-plugin">Enrico Niccoli</vendor>
 
-    <description>
-        Plugin to highlight FreeMarker syntax in .ftl files.
-    </description>
+    <description><![CDATA[
+<p>A simple plugin to highlight FreeMarker syntax in .ftl files</p>
+
+<p><b>Key Features:</b></p>
+<ul>
+  <li>Syntax highlighting for FreeMarker templates</li>
+  <li>Automatic recognition of .ftl files as FreeMarker files</li>
+  <li>Customizable color schemes for different syntactic elements</li>
+  <li>Support for FreeMarker directives, macros, and expressions</li>
+</ul>
+
+<p><b>How to Use:</b></p>
+<ul>
+  <li>Install the plugin and restart the IDE</li>
+  <li>Open any existing .ftl file or create a new one</li>
+  <li>FreeMarker syntax will be automatically highlighted</li>
+  <li>Customize colors via Settings > Editor > Color Scheme > FreeMarker</li>
+</ul>
+
+<p>Perfect for developers working with FreeMarker templates in Java, Spring, or other framework projects.</p>
+]]></description>
 
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileTypeFactory implementation="com.ennic.freemarker.filetype.FreeMarkerFileTypeFactory"/>
+        <fileType name="FreeMarker" implementationClass="com.ennic.freemarker.filetype.FreeMarkerFileType"
+                  fieldName="INSTANCE" language="FreeMarker" extensions="ftl"/>
+
         <lang.parserDefinition language="FreeMarker" implementationClass="com.ennic.freemarker.FreeMarkerParserDefinition"/>
         <lang.syntaxHighlighterFactory language="FreeMarker"
                                        implementationClass="com.ennic.freemarker.highlighting.FreeMarkerSyntaxHighlighterFactory"/>

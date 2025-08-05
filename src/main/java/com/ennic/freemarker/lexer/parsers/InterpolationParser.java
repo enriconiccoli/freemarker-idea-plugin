@@ -5,12 +5,12 @@ import com.ennic.freemarker.lexer.utils.LexerState;
 import com.ennic.freemarker.lexer.utils.LexerUtils;
 
 /**
- * Specialized parser for FreeMarker interpolations and function calls.
+ * Specialized parser for FreeMarker interpolations and expression.
  */
 public class InterpolationParser {
 
     /**
-     * Parses interpolation expressions ${...} and function calls within them.
+     * Parses interpolation expressions ${...} and expression within them.
      */
     public static ParseResult parseInterpolation(CharSequence buffer, int currentPosition,
                                                int endOffset, LexerState currentState) {
@@ -29,11 +29,11 @@ public class InterpolationParser {
                                  LexerState.NORMAL);
         }
 
-        // Check for function calls within interpolation
-        return parseFunctionCall(buffer, currentPosition, endOffset);// Not an interpolation
+        // Check for expression within interpolation
+        return parseExpression(buffer, currentPosition, endOffset);// Not an interpolation
     }
 
-    private static ParseResult parseFunctionCall(CharSequence buffer, int currentPosition, int endOffset) {
+    private static ParseResult parseExpression(CharSequence buffer, int currentPosition, int endOffset) {
         char currentChar = LexerUtils.safeCharAt(buffer, currentPosition);
 
         // Check if current character is a dot followed by an identifier
@@ -43,21 +43,21 @@ public class InterpolationParser {
 
             // Verify there's an identifier after the dot
             if (currentPosition < endOffset && LexerUtils.isIdentifierStart(LexerUtils.safeCharAt(buffer, currentPosition))) {
-                // Consume the function identifier
+
                 while (currentPosition < endOffset && LexerUtils.isIdentifierPart(LexerUtils.safeCharAt(buffer, currentPosition))) {
                     currentPosition++;
                 }
 
                 // Verify there's an opening parenthesis (indicates function call)
                 //if (currentPosition < endOffset && LexerUtils.safeCharAt(buffer, currentPosition) == '(') {
-                    // Only tokenize the dot + function name, leave parentheses for separate parsing
+                    // Only tokenize the dot + expression, leave parentheses for separate parsing
                     return new ParseResult(currentPosition,
-                                                       FreeMarkerTokenTypes.FUNCTION_CALL,
+                                                       FreeMarkerTokenTypes.EXPRESSION,
                                                        LexerState.IN_INTERPOLATION);
                 //}
             }
         }
 
-        return null; // Not a function call
+        return null; // Not am expression
     }
 }
