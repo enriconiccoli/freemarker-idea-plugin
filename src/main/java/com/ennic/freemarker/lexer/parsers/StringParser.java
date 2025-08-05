@@ -40,6 +40,10 @@ public class StringParser {
                 break;
             } else if (c == '\\' && currentPosition + 1 < endOffset) {
                 currentPosition += 2; // Skip escape sequence
+            } else if (isInterpolationContext(buffer, currentPosition, endOffset)) {
+                return new ParseResult(currentPosition + 1,
+                        FreeMarkerTokenTypes.STRING,
+                        LexerState.IN_INTERPOLATION);
             } else {
                 currentPosition++;
             }
