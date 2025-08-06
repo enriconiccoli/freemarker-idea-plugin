@@ -9,6 +9,7 @@ import javax.swing.*;
 
 public class FreeMarkerFileType extends LanguageFileType {
     public static final FreeMarkerFileType INSTANCE = new FreeMarkerFileType();
+    private static final Icon ICON = IconLoader.getIcon("/icons/ftlIcon.png", FreeMarkerFileType.class);
 
     private FreeMarkerFileType() {
         super(FreeMarkerLanguage.INSTANCE);
@@ -35,6 +36,6 @@ public class FreeMarkerFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return IconLoader.getIcon("/icons/ftlIcon.png", getClass());
+        return ICON;
     }
 }
